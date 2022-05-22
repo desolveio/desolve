@@ -39,26 +39,44 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                 .directory(projectDirectory)
                 .start()
 
-            val output = BufferedReader(
+            val info = BufferedReader(
                 InputStreamReader(
                     process.inputStream
                 )
             )
 
-            println("hi")
-            thread {
-                while (true)
-                {
-                    println("heeey")
-                    var line = output.readLine()
+            val error = BufferedReader(
+                InputStreamReader(
+                    process.errorStream
+                )
+            )
 
-                    while (line != null)
+
+            thread {
+                while (process.isAlive)
+                {
+                    val line = error.readLine()
+
+                    if (line != null)
                     {
                         println(line)
-                        line = output.readLine()
                     }
                 }
             }
+
+            thread {
+                while (process.isAlive)
+                {
+                    val line = info.readLine()
+
+                    if (line != null)
+                    {
+                        println(line)
+                    }
+                }
+            }
+
+            println("heee2y")
 
             process.waitFor()
 
