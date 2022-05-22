@@ -3,6 +3,8 @@ package io.desolve.parser.parsers
 import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
+import io.desolve.parser.compile.BuildResult
+import io.desolve.parser.compile.BuildResultType
 import java.io.File
 import java.io.FileReader
 import java.util.concurrent.CompletableFuture
@@ -53,7 +55,8 @@ object MavenProjectParser : ProjectParser
                 return@supplyAsync null
             }
 
-            return@supplyAsync ParsedProject(groupId!!, artifactId!!, version!!, File(""), EnvTableRepositoryConfig.getDirectory())
+            // TODO: 5/22/2022 maven build task
+            return@supplyAsync ParsedProject(groupId!!, artifactId!!, version!!, File(""), EnvTableRepositoryConfig.getDirectory(), BuildResult(BuildResultType.Success, null))
         }
     }
 
