@@ -7,6 +7,8 @@ import io.desolve.parser.compile.BuildTask
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 
 class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build)) : BuildTask
@@ -72,6 +74,9 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
     {
         val files = directory.listFiles() ?: return null
 
+        var largestFile: File? = null
+        var largestSize: Long? = null
+
         for (file in files)
         {
             if (!file.name.endsWith(".jar"))
@@ -79,10 +84,17 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                 continue
             }
 
-            return file
+            val path = Paths.get(file.path)
+            val size = Files.size(path)
+
+            if (largestSize == null || size > largestSize)
+            {
+                largestFile = file
+                largestSize = size
+            }
         }
 
-        return null
+        return largestFile
     }
 }
 
