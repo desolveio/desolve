@@ -12,6 +12,23 @@ enum class ProjectType(val recognisableFiles: String)
     Gradle("build.gradle"),
     GradleKotlin("build.gradle.kts");
 
+    fun matchesType(directory: File): Boolean
+    {
+        for (listFile in directory.listFiles()!!)
+        {
+            val names = recognisableFiles.split("|")
+
+            if (!names.contains(listFile.name))
+            {
+                continue
+            }
+
+            return true
+        }
+
+        return false
+    }
+
     companion object
     {
         fun recognize(directory: File): ProjectType?
@@ -20,9 +37,7 @@ enum class ProjectType(val recognisableFiles: String)
             {
                 for (value in values())
                 {
-                    val names = value.recognisableFiles.split("|")
-
-                    if (!names.contains(listFile.name))
+                    if (!value.matchesType(directory))
                     {
                         continue
                     }

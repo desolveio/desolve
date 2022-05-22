@@ -3,6 +3,7 @@ package io.desolve.parser.parsers
 import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
+import io.desolve.parser.ProjectType
 import io.desolve.parser.compile.BuildResultType
 import io.desolve.parser.compile.type.GradleBuildTask
 import java.io.File
@@ -12,6 +13,11 @@ import java.util.concurrent.CompletableFuture
 object GroovyGradleProjectParser : ProjectParser
 {
     override fun parse(directory: File): CompletableFuture<ParsedProject?>
+    {
+        return parse(directory, null)
+    }
+
+    fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
     {
         return CompletableFuture.supplyAsync {
             val gradleBuild = FileReader(File(directory, "build.gradle"))
@@ -47,22 +53,36 @@ object GroovyGradleProjectParser : ProjectParser
             // we could do this for every property, just lazy.
             if (artifactId == null)
             {
-                val gradleSettings = FileReader(File(directory, "settings.gradle"))
+                val file = File(directory, "settings.gradle")
 
-                for (line in gradleSettings.readLines())
+                if (file.exists())
                 {
-                    scanForProperty(
-                        line = line,
-                        id = "rootProject.name"
-                    ) {
-                        artifactId = it
+                    val gradleSettings = FileReader(file)
+
+                    for (line in gradleSettings.readLines())
+                    {
+                        scanForProperty(
+                            line = line,
+                            id = "rootProject.name"
+                        ) {
+                            artifactId = it
+                        }
                     }
                 }
             }
 
             if (artifactId == null || version == null || groupId == null)
             {
-                return@supplyAsync null
+                println("${artifactId}:${groupId}:${version}")
+                if (parent == null)
+                {
+                    println("null parent")
+                    return@supplyAsync null
+                }
+
+                artifactId = artifactId ?: parent.artifactId
+                version = version ?: parent.version
+                groupId = groupId ?: parent.groupId
             }
 
             val buildResult = GradleBuildTask()
@@ -71,18 +91,54 @@ object GroovyGradleProjectParser : ProjectParser
 
             if (buildResult.file == null || buildResult.result == BuildResultType.Failed)
             {
+                println("file is null")
                 return@supplyAsync null
             }
 
-            return@supplyAsync ParsedProject(
-                groupId!!, artifactId!!, version!!, buildResult.file, EnvTableRepositoryConfig.getDirectory()
+            val project = ParsedProject(
+                groupId!!, artifactId!!, version!!,
+                buildResult.file, EnvTableRepositoryConfig.getDirectory(), parent
             )
+
+            val subprojects = traverseRecursively(directory) {
+                ProjectType.Gradle.matchesType(it)
+            }.mapNotNull {
+                parse(directory, project).join()
+            }
+
+            return@supplyAsync project.apply {
+                this.children.addAll(subprojects)
+            }
         }
+    }
+
+    private fun traverseRecursively(directory: File, filter: (File) -> Boolean): List<File>
+    {
+        val files = directory.listFiles()
+        val list = mutableListOf<File>()
+
+        if (!directory.isDirectory || files == null)
+        {
+            return list
+        }
+
+        for (file in files)
+        {
+            if (!filter(file))
+            {
+                continue
+            }
+
+            list.add(directory)
+            list.addAll(traverseRecursively(directory, filter))
+        }
+
+        return list
     }
 
     private fun scanForProperty(line: String, id: String, action: (String) -> Unit)
     {
-        if (line.startsWith(id))
+        if (line.replace(" ", "").startsWith(id))
         {
             action(
                 line
@@ -94,27 +150,4 @@ object GroovyGradleProjectParser : ProjectParser
             )
         }
     }
-
-    private fun scanForJar(directory: File, artifactId: String, version: String): File?
-    {
-        val files = directory.listFiles() ?: return null
-
-        for (file in files)
-        {
-            println("${artifactId}-${version}")
-            if (!file.name.startsWith("${artifactId}-${version}") || !file.name.endsWith(".jar"))
-            {
-                continue
-            }
-
-            return file
-        }
-
-        return null
-    }
-}
-
-enum class GradlewArguments
-{
-
 }

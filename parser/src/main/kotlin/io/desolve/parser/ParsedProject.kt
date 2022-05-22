@@ -9,13 +9,26 @@ import java.util.*
 
 class ParsedProject(
     val groupId: String,
-    val artifactId: String,
+    var artifactId: String,
     val version: String,
-    val builtFile: File?,
-    val parentDirectory: File?
+    val builtFile: File? = null,
+    val parentDirectory: File? = null,
+    val parent: ParsedProject? = null,
+    val children: MutableList<ParsedProject> = mutableListOf()
 )
 {
-    constructor(groupId: String, artifactId: String, version: String) : this(groupId, artifactId, version, null, null)
+    init
+    {
+        if (children.isNotEmpty())
+        {
+            artifactId += "-parent"
+        }
+
+        if (parent != null)
+        {
+            artifactId = "${parent}-${artifactId}"
+        }
+    }
 
     fun generateDirectory(): File
     {
@@ -50,6 +63,11 @@ class ParsedProject(
                 writer.write(generateMetadata())
                 writer.close()
             }
+        }
+
+        for (child in children)
+        {
+            child.generateDirectory()
         }
 
         return data.directory

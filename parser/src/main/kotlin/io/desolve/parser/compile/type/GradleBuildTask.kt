@@ -10,6 +10,7 @@ import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
+import kotlin.concurrent.thread
 
 class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build)) : BuildTask
 {
@@ -44,15 +45,23 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                 )
             )
 
+            println("hi")
+            thread {
+                while (true)
+                {
+                    println("heeey")
+                    var line = output.readLine()
+
+                    while (line != null)
+                    {
+                        println(line)
+                        line = output.readLine()
+                    }
+                }
+            }
+
             process.waitFor()
 
-            var line = output.readLine()
-
-            while (line != null)
-            {
-                println(line)
-                line = output.readLine()
-            }
 
             val buildDirectory = File(projectDirectory, "/build/libs/")
             val file = scanForJar(buildDirectory)
