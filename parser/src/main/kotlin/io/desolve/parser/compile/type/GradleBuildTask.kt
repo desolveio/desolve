@@ -52,7 +52,7 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                 line = output.readLine()
             }
 
-            val buildDirectory = File(projectDirectory, "/build/lib/")
+            val buildDirectory = File(projectDirectory, "/build/libs/")
             val file = scanForJar(buildDirectory)
                 ?: return@supplyAsync BuildResult(
                     BuildResultType.Failed,
