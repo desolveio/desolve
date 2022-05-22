@@ -32,7 +32,7 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                     "gradlew.bat"
                 ).absolutePath,
                 *arguments.map {
-                    it.name
+                    it.argument
                 }.toTypedArray(),
             )
                 .directory(projectDirectory)
