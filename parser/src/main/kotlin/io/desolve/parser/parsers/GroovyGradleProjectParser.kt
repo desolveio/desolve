@@ -97,7 +97,7 @@ object GroovyGradleProjectParser : ProjectParser
 
             val project = ParsedProject(
                 groupId!!, artifactId!!, version!!,
-                buildResult.file, EnvTableRepositoryConfig.getDirectory(), parent
+                buildResult.file, EnvTableRepositoryConfig.getDirectory(), buildResult, parent
             )
 
             val subprojects = traverseRecursively(directory) {

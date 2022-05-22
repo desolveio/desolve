@@ -1,6 +1,7 @@
 package io.desolve.parser
 
 import io.desolve.data.DependencyData
+import io.desolve.parser.compile.BuildResult
 import java.io.File
 import java.io.FileWriter
 import java.lang.IllegalStateException
@@ -13,8 +14,9 @@ class ParsedProject(
     val version: String,
     val builtFile: File? = null,
     val parentDirectory: File? = null,
+    val result: BuildResult,
     val parent: ParsedProject? = null,
-    val children: MutableList<ParsedProject> = mutableListOf()
+    val children: MutableList<ParsedProject> = mutableListOf(),
 )
 {
     init
