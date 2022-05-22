@@ -2,7 +2,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.entity.channel.TextChannel
-import io.github.devrawr.desolver.config.impl.EnvTableRepositoryConfig
+import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.github.devrawr.watcher.Watcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

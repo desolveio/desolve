@@ -3,6 +3,8 @@ package io.github.devrawr.desolver.parser
 import io.github.devrawr.desolver.data.DependencyData
 import java.io.File
 import java.io.FileWriter
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ParsedProject(
     val groupId: String,
@@ -28,10 +30,18 @@ class ParsedProject(
             )
 
             // writer for generating <fileName>.pom
-            val writer = FileWriter(File(data.directory, "${fileName}.pom"))
+            var writer = FileWriter(File(data.directory, "${fileName}.pom"))
 
             writer.write(generatePom())
             writer.close()
+
+            if (version.contains("SNAPSHOT"))
+            {
+                writer = FileWriter(File(data.directory, "maven-metadata.xml"))
+
+                writer.write(generateMetadata())
+                writer.close()
+            }
         }
 
         return data.directory
@@ -46,6 +56,25 @@ class ParsedProject(
                 <artifactId>${artifactId}</artifactId>
                 <version>${version}</version>
             </project>
+        """.trimIndent()
+    }
+
+    fun generateMetadata(): String
+    {
+        return """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <metadata>
+          <groupId>${groupId}</groupId>
+          <artifactId>${artifactId}</artifactId>
+          <versioning>
+            <latest>${version}</latest>
+            <release>${version}</release>
+            <versions>
+              <version>${version}</version>
+            </versions>
+            <lastUpdated>${SimpleDateFormat("yyyymmddhhMMss").format(Date())}</lastUpdated>
+          </versioning>
+        </metadata>
         """.trimIndent()
     }
 }

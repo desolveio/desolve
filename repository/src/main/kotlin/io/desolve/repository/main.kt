@@ -1,4 +1,4 @@
-package io.github.devrawr.repository
+package io.desolve.repository
 
 import io.github.devrawr.desolver.config.RepositoryConfig
 import io.github.devrawr.desolver.config.impl.EnvTableRepositoryConfig
@@ -95,7 +95,7 @@ suspend fun parseFile(call: ApplicationCall): DependencyData?
     {
         call.respond(
             HttpStatusCode.BadRequest,
-            "No proper jar file found with provided arguments."
+            "No proper jar file found with provided arguments.\n${data}"
         )
         return null
     }
