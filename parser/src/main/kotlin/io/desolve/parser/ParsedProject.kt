@@ -1,6 +1,7 @@
 package io.desolve.parser
 
 import io.desolve.data.DependencyData
+import io.desolve.parser.compile.BuildResult
 import java.io.File
 import java.io.FileWriter
 import java.lang.IllegalStateException
@@ -12,10 +13,12 @@ class ParsedProject(
     val artifactId: String,
     val version: String,
     val builtFile: File?,
-    val parentDirectory: File?
+    val parentDirectory: File?,
+    val buildResult: BuildResult
 )
 {
-    constructor(groupId: String, artifactId: String, version: String) : this(groupId, artifactId, version, null, null)
+    constructor(groupId: String, artifactId: String, version: String, buildResult: BuildResult) :
+            this(groupId, artifactId, version, null, null, buildResult)
 
     fun generateDirectory(): File
     {

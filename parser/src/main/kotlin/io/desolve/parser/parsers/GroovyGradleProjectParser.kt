@@ -75,7 +75,7 @@ object GroovyGradleProjectParser : ProjectParser
             }
 
             return@supplyAsync ParsedProject(
-                groupId!!, artifactId!!, version!!, buildResult.file, EnvTableRepositoryConfig.getDirectory()
+                groupId!!, artifactId!!, version!!, buildResult.file, EnvTableRepositoryConfig.getDirectory(), buildResult
             )
         }
     }
