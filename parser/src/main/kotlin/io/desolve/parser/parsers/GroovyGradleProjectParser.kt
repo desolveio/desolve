@@ -3,8 +3,8 @@ package io.desolve.parser.parsers
 import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
-import io.desolve.parser.build.BuildResultType
-import io.desolve.parser.build.type.GradleBuildTask
+import io.desolve.parser.compile.BuildResultType
+import io.desolve.parser.compile.type.GradleBuildTask
 import java.io.File
 import java.io.FileReader
 import java.util.concurrent.CompletableFuture
