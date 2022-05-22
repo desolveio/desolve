@@ -15,12 +15,16 @@ object FileParseRecognition
         ProjectType.Gradle to GroovyGradleProjectParser
     )
 
-    fun parseUnrecognizedDirectory(directory: File): ParsedProject?
+    fun parseUnrecognizedDirectory(directory: File): CompletableFuture<ParsedProject?>
     {
-        val type = ProjectType.recognize(directory) ?: return null
-        val parser = parsers[type] ?: return null
+        return CompletableFuture.supplyAsync {
+            val type = ProjectType.recognize(directory) ?: return@supplyAsync null
+            val parser = parsers[type] ?: return@supplyAsync null
 
-        return parser.parse(directory)
+            return@supplyAsync parser
+                .parse(directory)
+                .join()
+        }
     }
 
     fun parseFromRepository(url: String): CompletableFuture<ParsedProject?>
@@ -36,9 +40,10 @@ object FileParseRecognition
                     .setDirectory(directory)
                     .call()
 
-                parseUnrecognizedDirectory(directory).apply {
-                    directory.delete()
-                }
+                parseUnrecognizedDirectory(directory)
+                    .apply {
+                        directory.delete()
+                    }.join()
             } catch (exception: Exception)
             {
                 exception.printStackTrace()
