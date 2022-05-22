@@ -5,53 +5,56 @@ import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
 import java.io.File
 import java.io.FileReader
+import java.util.concurrent.CompletableFuture
 
 object MavenProjectParser : ProjectParser
 {
-    override fun parse(directory: File): ParsedProject?
+    override fun parse(directory: File): CompletableFuture<ParsedProject?>
     {
-        val fileReader = FileReader(File(directory, "pom.xml"))
-        var groupId: String? = null
-        var artifactId: String? = null
-        var version: String? = null
+        return CompletableFuture.supplyAsync {
+            val fileReader = FileReader(File(directory, "pom.xml"))
+            var groupId: String? = null
+            var artifactId: String? = null
+            var version: String? = null
 
-        for (current in fileReader.readLines())
-        {
-            val line = current.replace(" ", "")
-
-            if (groupId != null && artifactId != null && version != null)
+            for (current in fileReader.readLines())
             {
-                break
+                val line = current.replace(" ", "")
+
+                if (groupId != null && artifactId != null && version != null)
+                {
+                    break
+                }
+
+                scanForTag(
+                    line = line,
+                    tag = "groupId"
+                ) {
+                    groupId = it
+                }
+
+                scanForTag(
+                    line = line,
+                    tag = "artifactId"
+                ) {
+                    artifactId = it
+                }
+
+                scanForTag(
+                    line = line,
+                    tag = "version"
+                ) {
+                    version = it
+                }
             }
 
-            scanForTag(
-                line = line,
-                tag = "groupId"
-            ) {
-                groupId = it
+            if (groupId == null || artifactId == null || version == null)
+            {
+                return@supplyAsync null
             }
 
-            scanForTag(
-                line = line,
-                tag = "artifactId"
-            ) {
-                artifactId = it
-            }
-
-            scanForTag(
-                line = line,
-                tag = "version"
-            ) {
-                version = it
-            }
+            return@supplyAsync ParsedProject(groupId!!, artifactId!!, version!!, File(""), EnvTableRepositoryConfig.getDirectory())
         }
-
-        if (groupId == null || artifactId == null || version == null)
-        {
-            return null
-        }
-
-        return ParsedProject(groupId!!, artifactId!!, version!!, File(""), EnvTableRepositoryConfig.getDirectory())
     }
 
     private fun scanForTag(line: String, tag: String, action: (String) -> Unit)

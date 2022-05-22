@@ -1,8 +1,14 @@
+package io.desolve.bot
+
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
+import dev.kord.core.behavior.reply
 import dev.kord.core.entity.channel.TextChannel
+import dev.kord.core.event.message.MessageCreateEvent
+import dev.kord.core.on
 import io.desolve.config.impl.EnvTableRepositoryConfig
+import io.desolve.parser.FileParseRecognition
 import io.github.devrawr.watcher.Watcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -13,8 +19,58 @@ suspend fun main()
     val bot = Kord("OTc3OTcxNzI0MzA4MDc4Njky.Gd8xti.OcB57AlVCnMDeyxDsom4nP4bH78BfuRUmtTioc")
     val channel = bot.guilds.first().getChannel(Snowflake(977970949083246653)) as TextChannel
 
+    bot.on<MessageCreateEvent> {
+        val content = message.content.split(" ")
+
+        if (content[0] != "!repo")
+        {
+            return@on
+        }
+
+        if (content.size < 2)
+        {
+            message.reply {
+                this.content = "Provide a valid GitHub URL, such as: `https://github.com/patrickzondervan/scoreboards`"
+            }
+            return@on
+        }
+
+        val url = content[1]
+
+
+        message.reply {
+            this.content = "Trying to build from repository."
+        }
+
+        try
+        {
+            FileParseRecognition.parseFromRepository(url).thenAccept {
+                runBlocking {
+                    message.reply {
+                        this.content = if (it == null)
+                        {
+                            "Was unable to build project from $url"
+                        } else
+                        {
+                            it.generateDirectory()
+                            "Succesfully built, added to repository."
+                        }
+                    }
+                }
+            }
+        } catch (exception: Exception)
+        {
+            exception.printStackTrace()
+        }
+    }
+
     thread {
         Watcher.watchDirectory(EnvTableRepositoryConfig.getDirectory()) {
+            if (it.name.startsWith("git"))
+            {
+                return@watchDirectory
+            }
+
             runBlocking {
                 val groupId = it.name
                 val artifactId = it.listFiles()!!.first().name
