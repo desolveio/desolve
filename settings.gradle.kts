@@ -1,4 +1,4 @@
-rootProject.name = "ktrepo"
+rootProject.name = "desolve"
 include("repository")
 include("parser")
 include("parser")
