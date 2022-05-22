@@ -8,6 +8,7 @@ allprojects {
     version = "1.0-SNAPSHOT"
 
     apply(plugin = "kotlin")
+    apply(plugin = "maven-publish")
 
     repositories {
         mavenCentral()
