@@ -14,7 +14,14 @@ enum class ProjectType(val recognisableFiles: String)
 
     fun matchesType(directory: File): Boolean
     {
-        for (listFile in directory.listFiles()!!)
+        val files = directory.listFiles()
+
+        if (files == null || !directory.isDirectory)
+        {
+            return false
+        }
+
+        for (listFile in files)
         {
             val names = recognisableFiles.split("|")
 

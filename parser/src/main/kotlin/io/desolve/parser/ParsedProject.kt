@@ -16,19 +16,24 @@ class ParsedProject(
     val parentDirectory: File? = null,
     val result: BuildResult,
     val parent: ParsedProject? = null,
-    val children: MutableList<ParsedProject> = mutableListOf(),
 )
 {
-    init
-    {
-        if (children.isNotEmpty())
+    var children: MutableList<ParsedProject> = mutableListOf()
+        set(value)
         {
-            artifactId += "-parent"
+            if (value.isNotEmpty())
+            {
+                artifactId += "-parent"
+            }
+
+            field = value
         }
 
+    init
+    {
         if (parent != null)
         {
-            artifactId = "${parent}-${artifactId}"
+            artifactId = "${parent.artifactId}-${artifactId}"
         }
     }
 
@@ -69,6 +74,8 @@ class ParsedProject(
 
         for (child in children)
         {
+            println("generating child directory")
+
             child.generateDirectory()
         }
 

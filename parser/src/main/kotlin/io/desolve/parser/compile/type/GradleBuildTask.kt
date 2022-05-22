@@ -76,10 +76,7 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                 }
             }
 
-            println("heee2y")
-
             process.waitFor()
-
 
             val buildDirectory = File(projectDirectory, "/build/libs/")
             val file = scanForJar(buildDirectory)
@@ -97,32 +94,36 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
         }
     }
 
-    private fun scanForJar(directory: File): File?
+    companion object
     {
-        val files = directory.listFiles() ?: return null
-
-        var largestFile: File? = null
-        var largestSize: Long? = null
-
-        for (file in files)
+        fun scanForJar(directory: File): File?
         {
-            if (!file.name.endsWith(".jar"))
+            val files = directory.listFiles() ?: return null
+
+            var largestFile: File? = null
+            var largestSize: Long? = null
+
+            for (file in files)
             {
-                continue
+                if (!file.name.endsWith(".jar"))
+                {
+                    continue
+                }
+
+                val path = Paths.get(file.path)
+                val size = Files.size(path)
+
+                if (largestSize == null || size > largestSize)
+                {
+                    largestFile = file
+                    largestSize = size
+                }
             }
 
-            val path = Paths.get(file.path)
-            val size = Files.size(path)
-
-            if (largestSize == null || size > largestSize)
-            {
-                largestFile = file
-                largestSize = size
-            }
+            return largestFile
         }
-
-        return largestFile
     }
+
 }
 
 enum class GradlewArguments(val argument: String)

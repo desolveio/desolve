@@ -4,6 +4,7 @@ import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
 import io.desolve.parser.ProjectType
+import io.desolve.parser.compile.BuildResult
 import io.desolve.parser.compile.BuildResultType
 import io.desolve.parser.compile.type.GradleBuildTask
 import java.io.File
@@ -76,24 +77,47 @@ object GroovyGradleProjectParser : ProjectParser
                 println("${artifactId}:${groupId}:${version}")
                 if (parent == null)
                 {
-                    println("null parent")
                     return@supplyAsync null
                 }
 
-                artifactId = artifactId ?: parent.artifactId
+                artifactId = artifactId ?: directory.name
                 version = version ?: parent.version
                 groupId = groupId ?: parent.groupId
             }
 
-            val buildResult = GradleBuildTask()
-                .build(directory)
-                .join()
+            val buildResult: BuildResult
 
-            if (buildResult.file == null || buildResult.result == BuildResultType.Failed)
+            if (parent == null)
             {
-                println("file is null")
-                return@supplyAsync null
+                buildResult = GradleBuildTask()
+                    .build(directory)
+                    .join()
+
+                if (buildResult.file == null || buildResult.result == BuildResultType.Failed)
+                {
+                    return@supplyAsync null
+                }
+            } else
+            {
+                val file = GradleBuildTask.scanForJar(
+                    File(
+                        directory,
+                        "/build/libs/"
+                    )
+                )
+
+                buildResult = BuildResult(
+                    when (file)
+                    {
+                        null -> BuildResultType.Failed
+                        else -> BuildResultType.Success
+                    },
+                    file
+                )
+
+                println((directory.path + " " + file?.exists()))
             }
+
 
             val project = ParsedProject(
                 groupId!!, artifactId!!, version!!,
@@ -103,37 +127,33 @@ object GroovyGradleProjectParser : ProjectParser
             val subprojects = traverseRecursively(directory) {
                 ProjectType.Gradle.matchesType(it)
             }.mapNotNull {
-                parse(directory, project).join()
+                println("child")
+                parse(it, project).join()
             }
 
             return@supplyAsync project.apply {
-                this.children.addAll(subprojects)
+                this.children = mutableListOf(*subprojects.toTypedArray())
             }
         }
     }
 
-    private fun traverseRecursively(directory: File, filter: (File) -> Boolean): List<File>
+    private fun traverseRecursively(
+        directory: File,
+        filter: (File) -> Boolean
+    ): List<File>
     {
         val files = directory.listFiles()
-        val list = mutableListOf<File>()
 
         if (!directory.isDirectory || files == null)
         {
-            return list
+            return emptyList()
         }
 
-        for (file in files)
-        {
-            if (!filter(file))
-            {
-                continue
+        return files
+            .filter {
+                filter(it)
             }
-
-            list.add(directory)
-            list.addAll(traverseRecursively(directory, filter))
-        }
-
-        return list
+            .toList()
     }
 
     private fun scanForProperty(line: String, id: String, action: (String) -> Unit)
