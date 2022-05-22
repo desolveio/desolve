@@ -1,5 +1,5 @@
-import io.github.devrawr.desolver.config.impl.EnvTableRepositoryConfig
-import io.github.devrawr.desolver.parser.ParsedProject
+import io.desolve.config.impl.EnvTableRepositoryConfig
+import io.desolve.parser.ParsedProject
 import org.junit.Test
 import java.io.File
 

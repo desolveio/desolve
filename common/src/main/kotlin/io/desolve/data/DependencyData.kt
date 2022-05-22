@@ -1,4 +1,4 @@
-package io.github.devrawr.desolver.data
+package io.desolve.data
 
 import java.io.File
 

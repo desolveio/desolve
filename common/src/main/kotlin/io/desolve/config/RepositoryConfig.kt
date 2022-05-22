@@ -1,4 +1,4 @@
-package io.github.devrawr.desolver.config
+package io.desolve.config
 
 import java.io.File
 

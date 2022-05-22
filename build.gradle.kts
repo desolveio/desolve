@@ -2,7 +2,6 @@ plugins {
     kotlin("jvm") version "1.6.20"
 }
 
-
 allprojects {
     group = "io.github.devrawr.repository"
     version = "1.0-SNAPSHOT"

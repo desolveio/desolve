@@ -1,7 +1,7 @@
-package io.github.devrawr.desolver.parser
+package io.desolve.parser
 
-import io.github.devrawr.desolver.parser.parsers.GroovyGradleProjectParser
-import io.github.devrawr.desolver.parser.parsers.MavenProjectParser
+import io.desolve.parser.parsers.GroovyGradleProjectParser
+import io.desolve.parser.parsers.MavenProjectParser
 import java.io.File
 
 object FileParseRecognition

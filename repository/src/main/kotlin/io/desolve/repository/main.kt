@@ -1,8 +1,8 @@
 package io.desolve.repository
 
-import io.github.devrawr.desolver.config.RepositoryConfig
-import io.github.devrawr.desolver.config.impl.EnvTableRepositoryConfig
-import io.github.devrawr.desolver.data.DependencyData
+import io.desolve.config.RepositoryConfig
+import io.desolve.config.impl.EnvTableRepositoryConfig
+import io.desolve.data.DependencyData
 import io.github.devrawr.inject.Inject
 import io.github.devrawr.inject.Injector
 import io.github.devrawr.inject.inject

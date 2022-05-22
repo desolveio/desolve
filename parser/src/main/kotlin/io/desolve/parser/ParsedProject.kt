@@ -1,6 +1,6 @@
-package io.github.devrawr.desolver.parser
+package io.desolve.parser
 
-import io.github.devrawr.desolver.data.DependencyData
+import io.desolve.data.DependencyData
 import java.io.File
 import java.io.FileWriter
 import java.text.SimpleDateFormat

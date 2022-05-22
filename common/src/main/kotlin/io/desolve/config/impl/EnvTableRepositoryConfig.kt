@@ -1,6 +1,6 @@
-package io.github.devrawr.desolver.config.impl
+package io.desolve.config.impl
 
-import io.github.devrawr.desolver.config.RepositoryConfig
+import io.desolve.config.RepositoryConfig
 import java.io.File
 
 object EnvTableRepositoryConfig : RepositoryConfig

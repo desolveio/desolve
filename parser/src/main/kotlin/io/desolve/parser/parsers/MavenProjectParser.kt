@@ -1,8 +1,8 @@
-package io.github.devrawr.desolver.parser.parsers
+package io.desolve.parser.parsers
 
-import io.github.devrawr.desolver.config.impl.EnvTableRepositoryConfig
-import io.github.devrawr.desolver.parser.ParsedProject
-import io.github.devrawr.desolver.parser.ProjectParser
+import io.desolve.config.impl.EnvTableRepositoryConfig
+import io.desolve.parser.ParsedProject
+import io.desolve.parser.ProjectParser
 import java.io.File
 import java.io.FileReader
 

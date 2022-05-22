@@ -1,4 +1,4 @@
-import io.github.devrawr.desolver.parser.FileParseRecognition
+import io.desolve.parser.FileParseRecognition
 import org.junit.Test
 import java.io.File
 
@@ -8,7 +8,7 @@ class ProjectRecognitionTest
     fun gradleTest()
     {
         val home = File("${System.getenv("USERPROFILE")}${File.separator}")
-        val projectDirectory = File(home, "/projects/reachered")
+        val projectDirectory = File(home, "/projects/packt")
 
         FileParseRecognition.parseUnrecognizedDirectory(projectDirectory)!!.generateDirectory()
     }

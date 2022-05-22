@@ -1,4 +1,4 @@
-package io.github.devrawr.desolver.parser
+package io.desolve.parser
 
 import java.io.File
 
