@@ -73,33 +73,37 @@ suspend fun main()
 
             runBlocking {
                 val groupId = it.name
-                val artifactId = it.listFiles()!!.first().name
-                val version = it.listFiles()!!.first().listFiles()!!.first().name
+                val files = it.listFiles() ?: return@runBlocking
 
-                channel.createEmbed {
-                    this.title = "New Project Found"
-                    this.field("Group Id", true) {
-                        groupId
-                    }
+                for (file in files)
+                {
+                    val artifactId = file.name
+                    val version = file.listFiles()!!.first().name
 
-                    this.field("Artifact Id", true) {
-                        artifactId
-                    }
+                    channel.createEmbed {
+                        this.title = "New Project Found"
+                        this.field("Group Id", true) {
+                            groupId
+                        }
 
-                    this.field("Version", true) {
-                        version
-                    }
+                        this.field("Artifact Id", true) {
+                            artifactId
+                        }
 
-                    this.field("build.gradle example") {
-                        """
+                        this.field("Version", true) {
+                            version
+                        }
+
+                        this.field("build.gradle example") {
+                            """
                             ```groovy
                             implementation "${groupId}:${artifactId}:${version}"
                             ```
                         """.trimIndent()
-                    }
+                        }
 
-                    this.field("pom.xml example") {
-                        """
+                        this.field("pom.xml example") {
+                            """
                             ```xml
                             <dependency>
                                 <groupId>${groupId}</groupId>
@@ -108,6 +112,7 @@ suspend fun main()
                             </dependency>
                             ```
                         """.trimIndent()
+                        }
                     }
                 }
             }

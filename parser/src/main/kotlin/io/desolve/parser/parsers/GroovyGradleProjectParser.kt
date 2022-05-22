@@ -114,8 +114,6 @@ object GroovyGradleProjectParser : ProjectParser
                     },
                     file
                 )
-
-                println((directory.path + " " + file?.exists()))
             }
 
 
@@ -127,7 +125,6 @@ object GroovyGradleProjectParser : ProjectParser
             val subprojects = traverseRecursively(directory) {
                 ProjectType.Gradle.matchesType(it)
             }.mapNotNull {
-                println("child")
                 parse(it, project).join()
             }
 
