@@ -12,12 +12,13 @@ allprojects {
     repositories {
         mavenCentral()
         maven("https://jitpack.io")
-        maven("http://localhost:3713/repo") {
+        maven("http://143.176.140.30:3717/repo") {
             isAllowInsecureProtocol = true
         }
     }
 
     dependencies {
         implementation("com.github.patrickzondervan:depenject:42af9d6a0b")
+        testImplementation(kotlin("test"))
     }
 }

@@ -24,7 +24,7 @@ fun main()
             it.bind<RepositoryConfig>() to EnvTableRepositoryConfig
         }
 
-    embeddedServer(Netty, port = 3713) {
+    embeddedServer(Netty, port = 3717) {
         routing {
             depend()
         }
@@ -33,11 +33,11 @@ fun main()
 
 fun Route.depend()
 {
-    get("/repo/{groupId}/{artifactId}/{version}/{file}") {
+    get("/repo/{repository...}") {
         this.context.respondFile(parseFile(this.context)?.file ?: return@get)
     }
 
-    head("/repo/{groupId}/{artifactId}/{version}/{file}") {
+    head("/repo/{repository...}") {
         val data = parseFile(this.context) ?: return@head
 
         this.context.respondText(
@@ -51,12 +51,34 @@ fun Route.depend()
 
 suspend fun parseFile(call: ApplicationCall): DependencyData?
 {
-    val groupId = call.parameters["groupId"]
-    val artifactId = call.parameters["artifactId"]
-    val version = call.parameters["version"]
-    val fileName = call.parameters["file"]
+    val entries = call.parameters.getAll("repository") ?: call.respondText("aaa")
 
-    if (groupId == null || artifactId == null || version == null || fileName == null)
+    if (entries !is List<*>)
+    {
+        return null
+    }
+
+    val size = entries.size
+
+    val parameterAmount = 4
+    val groupIdLength = size - parameterAmount + 1
+
+    var groupId = ""
+    val artifactId = entries[groupIdLength]
+    val version = entries[groupIdLength + 1]
+    val fileName = entries[groupIdLength + 2]
+
+    for (i in 0 until groupIdLength)
+    {
+        groupId += entries[i]
+
+        if (i != groupIdLength - 1)
+        {
+            groupId += "."
+        }
+    }
+
+    if (artifactId == null || version == null || fileName == null)
     {
         call.respond(
             HttpStatusCode.BadRequest,
@@ -66,7 +88,8 @@ suspend fun parseFile(call: ApplicationCall): DependencyData?
     }
 
     val config by Inject.inject<RepositoryConfig>()
-    val data = DependencyData(groupId, artifactId, version, fileName, config.getDirectory())
+    val data =
+        DependencyData(groupId, artifactId as String, version as String, fileName as String, config.getDirectory())
 
     if (!data.isFile())
     {

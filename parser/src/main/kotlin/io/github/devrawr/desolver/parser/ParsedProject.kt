@@ -24,7 +24,7 @@ class ParsedProject(
             data.directory.mkdirs()
 
             builtFile.copyTo(
-                File(data.directory, builtFile.name)
+                File(data.directory, "${fileName}.jar")
             )
 
             // writer for generating <fileName>.pom
