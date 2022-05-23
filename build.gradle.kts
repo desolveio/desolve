@@ -13,9 +13,6 @@ allprojects {
     repositories {
         mavenCentral()
         maven("https://jitpack.io")
-        maven("http://143.176.140.30:3717/repo") {
-            isAllowInsecureProtocol = true
-        }
     }
 
     dependencies {
