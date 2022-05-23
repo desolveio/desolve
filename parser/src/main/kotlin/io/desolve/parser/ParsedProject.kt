@@ -74,8 +74,6 @@ class ParsedProject(
 
         for (child in children)
         {
-            println("generating child directory")
-
             child.generateDirectory()
         }
 

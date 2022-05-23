@@ -31,6 +31,13 @@ class DockerContainer(port: Int, config: DefaultDockerClientConfig, client: Dock
             .exec()
     }
 
+    override fun moveFolderFromContainer(file: File)
+    {
+        container.copyArchiveFromContainerCmd(containerId, file.path)
+            .withHostPath(file.path)
+            .exec()
+    }
+
     override fun executeCommand(vararg arguments: String): DataStream
     {
         val cmd = container

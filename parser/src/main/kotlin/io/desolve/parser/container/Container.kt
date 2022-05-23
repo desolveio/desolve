@@ -5,7 +5,10 @@ import java.io.File
 interface Container
 {
     var status: ContainerStatus
+
     fun moveFolderToContainer(file: File)
+    fun moveFolderFromContainer(file: File)
+
     fun executeCommand(vararg arguments: String): DataStream
 }
 

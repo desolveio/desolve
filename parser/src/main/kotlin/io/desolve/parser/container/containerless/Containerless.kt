@@ -15,6 +15,11 @@ object Containerless : Container
         workingDirectory = file
     }
 
+    override fun moveFolderFromContainer(file: File)
+    {
+        workingDirectory = null
+    }
+
     override fun executeCommand(vararg arguments: String): DataStream
     {
         val builder = ProcessBuilder(*arguments)

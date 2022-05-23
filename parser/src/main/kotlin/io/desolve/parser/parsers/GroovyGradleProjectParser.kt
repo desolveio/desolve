@@ -74,7 +74,6 @@ object GroovyGradleProjectParser : ProjectParser
 
             if (artifactId == null || version == null || groupId == null)
             {
-                println("${artifactId}:${groupId}:${version}")
                 if (parent == null)
                 {
                     return@supplyAsync null
