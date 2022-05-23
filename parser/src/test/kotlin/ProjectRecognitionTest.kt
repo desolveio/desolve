@@ -10,6 +10,6 @@ class ProjectRecognitionTest
         val home = File("${System.getenv("USERPROFILE")}${File.separator}")
         val projectDirectory = File(home, "/projects/packt")
 
-        FileParseRecognition.parseUnrecognizedDirectory(projectDirectory)!!.generateDirectory()
+        FileParseRecognition.parseUnrecognizedDirectory(projectDirectory).join()?.generateDirectory()
     }
 }

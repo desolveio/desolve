@@ -1,5 +1,6 @@
 package io.desolve.bot
 
+import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
@@ -22,7 +23,9 @@ suspend fun main()
     bot.on<MessageCreateEvent> {
         val content = message.content.split(" ")
 
-        if (content[0] != "!repo")
+        if (content[0] != "!repo" || message.author?.asMember(bot.guilds.first().id)?.getPermissions()
+                ?.contains(Permission.Administrator) == false
+        )
         {
             return@on
         }

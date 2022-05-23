@@ -18,7 +18,7 @@ object GroovyGradleProjectParser : ProjectParser
         return parse(directory, null)
     }
 
-    fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
+    private fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
     {
         return CompletableFuture.supplyAsync {
             val gradleBuild = FileReader(File(directory, "build.gradle"))

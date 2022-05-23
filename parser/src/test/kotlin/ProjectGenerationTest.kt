@@ -1,5 +1,7 @@
 import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
+import io.desolve.parser.compile.BuildResult
+import io.desolve.parser.compile.BuildResultType
 import org.junit.Test
 import java.io.File
 
@@ -17,7 +19,7 @@ class ProjectGenerationTest
             File("${home}/projects/data-store-kt/build/libs/data-store-kt-1.0-SNAPSHOT.jar")
 
         ParsedProject(
-            "io.github.yourmom", "data-stuff", "3.0", jarFile, config.getDirectory()
+            "io.github.yourmom", "data-stuff", "3.0", jarFile, config.getDirectory(), BuildResult(BuildResultType.Failed, null)
         ).generateDirectory()
     }
 }

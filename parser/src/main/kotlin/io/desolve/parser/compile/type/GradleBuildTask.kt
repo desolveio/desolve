@@ -4,6 +4,7 @@ import io.desolve.parser.compile.BuildResult
 import io.desolve.parser.compile.BuildResultType
 import io.desolve.parser.compile.BuildStatus
 import io.desolve.parser.compile.BuildTask
+import io.desolve.parser.container.ContainerProvider
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -27,17 +28,29 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
         return CompletableFuture.supplyAsync {
             status = BuildStatus.Started
 
-            val process = ProcessBuilder(
-                File(
-                    projectDirectory,
-                    "gradlew.bat"
-                ).absolutePath,
-                *arguments.map {
-                    it.argument
-                }.toTypedArray(),
-            )
-                .directory(projectDirectory)
-                .start()
+            val containerHandler = ContainerProvider.getContainerHandler()
+            val container = containerHandler.getAvailableContainer()
+                ?: containerHandler.constructNewContainer()
+
+            container.moveFolderToContainer(projectDirectory)
+
+            val process =
+                container.executeCommand(
+                    "${projectDirectory.path}/gradlew.bat",
+                    *arguments.map { it.argument }.toTypedArray()
+                )
+
+//            val process = ProcessBuilder(
+//                File(
+//                    projectDirectory,
+//                    "gradlew.bat"
+//                ).absolutePath,
+//                *arguments.map {
+//                    it.argument
+//                }.toTypedArray(),
+//            )
+//                .directory(projectDirectory)
+//                .start()
 
             val info = BufferedReader(
                 InputStreamReader(
@@ -51,9 +64,10 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                 )
             )
 
+            var alive = true
 
             thread {
-                while (process.isAlive)
+                while (alive)
                 {
                     val line = error.readLine()
 
@@ -65,7 +79,7 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
             }
 
             thread {
-                while (process.isAlive)
+                while (alive)
                 {
                     val line = info.readLine()
 
@@ -76,7 +90,8 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
                 }
             }
 
-            process.waitFor()
+            process.wait()
+            alive = false
 
             val buildDirectory = File(projectDirectory, "/build/libs/")
             val file = scanForJar(buildDirectory)
@@ -123,7 +138,6 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
             return largestFile
         }
     }
-
 }
 
 enum class GradlewArguments(val argument: String)

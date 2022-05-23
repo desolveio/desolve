@@ -5,7 +5,6 @@ import io.desolve.parser.parsers.GroovyGradleProjectParser
 import io.desolve.parser.parsers.MavenProjectParser
 import org.eclipse.jgit.api.Git
 import java.io.File
-import java.net.URL
 import java.util.concurrent.CompletableFuture
 
 object FileParseRecognition
@@ -40,10 +39,9 @@ object FileParseRecognition
                     .setDirectory(directory)
                     .call()
 
-                parseUnrecognizedDirectory(directory)
-                    .apply {
-                        directory.delete()
-                    }.join()
+                parseUnrecognizedDirectory(directory).join().apply {
+                    directory.delete()
+                }
             } catch (exception: Exception)
             {
                 exception.printStackTrace()
