@@ -27,11 +27,11 @@ allprojects {
         repositories {
             maven {
                 name = "desolve"
-                url = uri("${property("desolve.artifactory_contextUrl")}/gradle-release")
+                url = uri("${property("desolve_artifactory_contextUrl")}/gradle-release")
 
                 credentials {
-                    username = property("desolve.artifactory_user") as String
-                    password = property("desolve.artifactory_password") as String
+                    username = property("desolve_artifactory_user") as String
+                    password = property("desolve_artifactory_password") as String
                 }
             }
         }
