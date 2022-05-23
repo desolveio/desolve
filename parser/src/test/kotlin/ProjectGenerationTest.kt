@@ -7,7 +7,6 @@ import java.io.File
 
 class ProjectGenerationTest
 {
-    @Test
     fun generate()
     {
         val home = File("${System.getenv("USERPROFILE")}${File.separator}")

@@ -4,7 +4,6 @@ import java.io.File
 
 class ProjectRecognitionTest
 {
-    @Test
     fun gradleTest()
     {
         val home = File("${System.getenv("USERPROFILE")}${File.separator}")
