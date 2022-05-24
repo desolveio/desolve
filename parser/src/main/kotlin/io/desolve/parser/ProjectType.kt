@@ -8,12 +8,12 @@ import java.io.File
  *
  * @author Patrick Zondervan
  * @since 5/23/2022
-*/
-enum class ProjectType(val recognisableFiles: String)
+ */
+enum class ProjectType(val fileRegex: Regex)
 {
-    Maven("pom.xml"),
-    Gradle("build.gradle"),
-    GradleKotlin("build.gradle.kts");
+    Maven("pom.xml\$".toRegex()),
+    Gradle("\\.gradle\$".toRegex()),
+    GradleKotlin("\\.gradle.kts\$".toRegex());
 
     fun matchesType(directory: File): Boolean
     {
@@ -26,9 +26,7 @@ enum class ProjectType(val recognisableFiles: String)
 
         for (listFile in files)
         {
-            val names = recognisableFiles.split("|")
-
-            if (!names.contains(listFile.name))
+            if (!listFile.name.matches(fileRegex))
             {
                 continue
             }

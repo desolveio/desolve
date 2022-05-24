@@ -4,11 +4,12 @@ import java.io.File
 
 class ProjectRecognitionTest
 {
+    @Test
     fun gradleTest()
     {
         val home = File("${System.getenv("USERPROFILE")}${File.separator}")
         val projectDirectory = File(home, "/projects/packt")
 
-        FileParseRecognition.parseUnrecognizedDirectory(projectDirectory).join()?.generateDirectory()
+        println(FileParseRecognition.parseUnrecognizedDirectory(projectDirectory).join()?.groupId)
     }
 }
