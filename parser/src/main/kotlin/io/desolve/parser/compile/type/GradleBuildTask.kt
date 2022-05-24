@@ -93,7 +93,7 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
             alive = false
 
             // once it's done compiling we'll want it to move back out of the container
-            container.moveFolderFromContainer(projectDirectory);
+            container.moveFolderFromContainer(projectDirectory)
 
             val buildDirectory = File(projectDirectory, "/build/libs/")
             val file = scanForJar(buildDirectory)

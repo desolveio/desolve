@@ -26,7 +26,6 @@ suspend fun main()
 
     val guild = bot.guilds.first()
     val channel = guild.getChannel(Snowflake(977970949083246653)) as TextChannel
-    val repoChannel = guild.getChannel(Snowflake(978352760946847814)) as VoiceChannel
 
     bot.on<MessageCreateEvent> {
         val content = message.content.split(" ")

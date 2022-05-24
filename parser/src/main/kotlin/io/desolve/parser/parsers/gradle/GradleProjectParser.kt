@@ -1,4 +1,4 @@
-package io.desolve.parser.parsers
+package io.desolve.parser.parsers.gradle
 
 import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
@@ -11,12 +11,11 @@ import java.io.File
 import java.io.FileReader
 import java.util.concurrent.CompletableFuture
 
-/**
- * @author Patrick Zondervan
- * @since 5/23/2022
- */
-object GroovyGradleProjectParser : ProjectParser
+abstract class GradleProjectParser: ProjectParser
 {
+    abstract val buildFileName: String
+    abstract val settingsFileName: String
+
     override fun parse(directory: File): CompletableFuture<ParsedProject?>
     {
         return parse(directory, null)
@@ -25,7 +24,7 @@ object GroovyGradleProjectParser : ProjectParser
     private fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
     {
         return CompletableFuture.supplyAsync {
-            val gradleBuild = FileReader(File(directory, "build.gradle"))
+            val gradleBuild = FileReader(File(directory, buildFileName))
 
             var groupId: String? = null
             var version: String? = null
@@ -58,7 +57,7 @@ object GroovyGradleProjectParser : ProjectParser
             // we could do this for every property, just lazy.
             if (artifactId == null)
             {
-                val file = File(directory, "settings.gradle")
+                val file = File(directory, settingsFileName)
 
                 if (file.exists())
                 {
@@ -154,7 +153,7 @@ object GroovyGradleProjectParser : ProjectParser
             .toList()
     }
 
-    private fun scanForProperty(line: String, id: String, action: (String) -> Unit)
+    open fun scanForProperty(line: String, id: String, action: (String) -> Unit)
     {
         if (line.replace(" ", "").startsWith(id))
         {

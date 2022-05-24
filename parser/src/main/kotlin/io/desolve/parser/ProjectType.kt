@@ -8,6 +8,10 @@ import java.io.File
  */
 enum class ProjectType(val fileRegex: Regex)
 {
+    // TODO: 24/05/2022 fix thoses regexes, currently:
+    // - GradleKotlin | does not work
+    // - Gradle       | seems to work
+    // - Maven        | untested
     Maven("pom.xml\$".toRegex()),
     Gradle("\\.gradle\$".toRegex()),
     GradleKotlin("\\.gradle.kts\$".toRegex());
@@ -25,6 +29,7 @@ enum class ProjectType(val fileRegex: Regex)
         {
             if (!listFile.name.matches(fileRegex))
             {
+                println(listFile.name)
                 continue
             }
 
