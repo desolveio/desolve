@@ -2,6 +2,10 @@ package io.desolve.data
 
 import java.io.File
 
+/**
+ * @author Patrick Zondervan
+ * @since 5/23/2022
+ */
 data class DependencyData(
     val groupId: String,
     val artifactId: String,

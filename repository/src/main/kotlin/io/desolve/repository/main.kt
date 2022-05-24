@@ -16,6 +16,10 @@ import io.ktor.server.routing.*
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * @author Patrick Zondervan
+ * @since 5/23/2022
+ */
 fun main()
 {
     Injector

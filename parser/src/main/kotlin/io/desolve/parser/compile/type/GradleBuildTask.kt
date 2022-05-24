@@ -13,6 +13,10 @@ import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import kotlin.concurrent.thread
 
+/**
+ * @author Patrick Zondervan
+ * @since 5/23/2022
+ */
 class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build)) : BuildTask
 {
     override var status = BuildStatus.Starting

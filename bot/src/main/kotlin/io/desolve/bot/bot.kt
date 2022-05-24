@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlin.concurrent.thread
 
+/**
+ * @author Patrick Zondervan
+ * @since 5/23/2022
+ */
 suspend fun main()
 {
     val bot = Kord("OTc3OTcxNzI0MzA4MDc4Njky.Gd8xti.OcB57AlVCnMDeyxDsom4nP4bH78BfuRUmtTioc")

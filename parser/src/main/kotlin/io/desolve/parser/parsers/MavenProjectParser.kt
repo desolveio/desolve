@@ -9,6 +9,10 @@ import java.io.File
 import java.io.FileReader
 import java.util.concurrent.CompletableFuture
 
+/**
+ * @author Patrick Zondervan
+ * @since 5/23/2022
+ */
 object MavenProjectParser : ProjectParser
 {
     override fun parse(directory: File): CompletableFuture<ParsedProject?>

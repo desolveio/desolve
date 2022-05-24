@@ -7,6 +7,10 @@ import org.eclipse.jgit.api.Git
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
+/**
+ * @author Patrick Zondervan
+ * @since 5/23/2022
+ */
 object FileParseRecognition
 {
     private val parsers = hashMapOf(
