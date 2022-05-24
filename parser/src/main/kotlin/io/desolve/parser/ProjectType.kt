@@ -3,9 +3,6 @@ package io.desolve.parser
 import java.io.File
 
 /**
- * Every enum should have a string, which can be split using
- * the '|' pipe symbol.
- *
  * @author Patrick Zondervan
  * @since 5/23/2022
  */

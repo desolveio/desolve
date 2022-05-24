@@ -5,6 +5,7 @@ import io.desolve.parser.compile.BuildResultType
 import io.desolve.parser.compile.BuildStatus
 import io.desolve.parser.compile.BuildTask
 import io.desolve.parser.container.ContainerProvider
+import io.desolve.util.OSType
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -38,23 +39,17 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
 
             container.moveFolderToContainer(projectDirectory)
 
+            val executableFile = when (OSType.resolveOsType())
+            {
+                OSType.Windows -> "gradlew.bat"
+                OSType.Unix -> "gradlew"
+            }
+
             val process =
                 container.executeCommand(
-                    "${projectDirectory.path}/gradlew.bat",
+                    "${projectDirectory.path}/${executableFile}",
                     *arguments.map { it.argument }.toTypedArray()
                 )
-
-//            val process = ProcessBuilder(
-//                File(
-//                    projectDirectory,
-//                    "gradlew.bat"
-//                ).absolutePath,
-//                *arguments.map {
-//                    it.argument
-//                }.toTypedArray(),
-//            )
-//                .directory(projectDirectory)
-//                .start()
 
             val info = BufferedReader(
                 InputStreamReader(
@@ -96,6 +91,9 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
 
             process.wait()
             alive = false
+
+            // once it's done compiling we'll want it to move back out of the container
+            container.moveFolderFromContainer(projectDirectory);
 
             val buildDirectory = File(projectDirectory, "/build/libs/")
             val file = scanForJar(buildDirectory)
