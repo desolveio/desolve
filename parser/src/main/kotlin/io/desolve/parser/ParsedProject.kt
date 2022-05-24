@@ -37,16 +37,16 @@ class ParsedProject(
         }
     }
 
-    fun generateDirectory(): File
+    fun generateDirectory(targetDirectory: File? = parentDirectory): File
     {
-        if (parentDirectory == null || builtFile == null)
+        if (targetDirectory == null || builtFile == null)
         {
             throw IllegalStateException("Unable to call #generateDirectory() from ParsedObject without builtFile/parentDirectory fields.")
         }
 
         val fileName = "${artifactId}-${version}"
         val data = DependencyData(
-            groupId, artifactId, version, "${fileName}.jar", parentDirectory
+            groupId, artifactId, version, "${fileName}.jar", targetDirectory
         )
 
         if (!data.isDirectory())
