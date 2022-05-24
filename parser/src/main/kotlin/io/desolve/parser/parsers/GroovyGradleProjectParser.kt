@@ -121,7 +121,7 @@ object GroovyGradleProjectParser : ProjectParser
                 buildResult.file, EnvTableRepositoryConfig.getDirectory(), buildResult, parent
             )
 
-            val subprojects = traverseRecursively(directory) {
+            val subprojects = traverseFiles(directory) {
                 ProjectType.Gradle.matchesType(it)
             }.mapNotNull {
                 parse(it, project).join()
@@ -133,7 +133,7 @@ object GroovyGradleProjectParser : ProjectParser
         }
     }
 
-    private fun traverseRecursively(
+    private fun traverseFiles(
         directory: File,
         filter: (File) -> Boolean
     ): List<File>
@@ -146,9 +146,7 @@ object GroovyGradleProjectParser : ProjectParser
         }
 
         return files
-            .filter {
-                filter(it)
-            }
+            .filter(filter)
             .toList()
     }
 
