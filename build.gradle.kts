@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "io.desolve.repository"
-    version = "1.0.02"
+    version = "1.0.01"
 
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
@@ -16,8 +16,10 @@ allprojects {
     }
 
     dependencies {
-        implementation("com.github.patrickzondervan:depenject:42af9d6a0b")
         testImplementation(kotlin("test"))
+
+        api("io.insert-koin:koin-core:3.2.0")
+        testApi("io.insert-koin:koin-test:3.2.0")
     }
 
     publishing {
