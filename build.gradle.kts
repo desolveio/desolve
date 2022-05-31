@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.6.20"
     `maven-publish`
+    idea
 }
 
 allprojects {
@@ -9,6 +10,14 @@ allprojects {
 
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
+    apply(plugin = "idea")
+
+    idea {
+        module {
+            isDownloadJavadoc = true
+            isDownloadSources = true
+        }
+    }
 
     repositories {
         mavenCentral()
