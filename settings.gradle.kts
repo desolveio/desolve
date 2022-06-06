@@ -1,6 +1,2 @@
-rootProject.name = "desolve"
-include("repository")
-include("parser")
-include("parser")
-include("common")
-include("bot")
+rootProject.name = "desolve-repository"
+include("repository", "parser", "common", "bot")
