@@ -1,7 +1,3 @@
-plugins {
-    kotlin("jvm")
-}
-
 repositories {
     maven("https://m2.dv8tion.net/releases")
 }
