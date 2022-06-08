@@ -12,7 +12,7 @@ enum class OSType
             return when
             {
                 System.getProperty("os.name").contains("Windows") -> Windows
-                else -> Unix
+                else -> Windows // TODO: 6/8/2022 change
             }
         }
     }
