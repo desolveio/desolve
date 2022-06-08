@@ -3,7 +3,7 @@ import org.junit.Test
 
 class GitPullTest
 {
-    @Test
+//    @Test
     fun pullGitHub()
     {
         val repo = "https://github.com/patrickzondervan/class-filtering"

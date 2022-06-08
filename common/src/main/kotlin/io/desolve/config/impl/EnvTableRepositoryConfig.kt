@@ -18,7 +18,7 @@ object EnvTableRepositoryConfig : RepositoryConfig
                 OSType.Unix -> "HOME"
                 OSType.Windows -> "USERPROFILE"
             }
-        )}${File.separator}.desolvestore")
+        )}${File.separator}.dslvcache")
 
         if (!file.exists())
         {

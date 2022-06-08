@@ -18,7 +18,15 @@ import kotlin.concurrent.thread
  * @author Patrick Zondervan
  * @since 5/23/2022
  */
-class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build)) : BuildTask
+enum class GradlewArguments(val argument: String)
+{
+    Build("build"),
+    Clean("clean"),
+}
+
+class GradleBuildTask(
+    private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build)
+) : BuildTask
 {
     override var status = BuildStatus.Starting
 
@@ -140,10 +148,4 @@ class GradleBuildTask(private vararg val arguments: GradlewArguments = arrayOf(G
             return largestFile
         }
     }
-}
-
-enum class GradlewArguments(val argument: String)
-{
-    Build("build"),
-    Clean("clean"),
 }

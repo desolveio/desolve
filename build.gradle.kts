@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.21"
     `maven-publish`
     idea
 }
 
 allprojects {
     group = "io.desolve.repository"
-    version = "1.0.01"
+    version = "1.0.0.2"
 
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
