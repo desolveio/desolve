@@ -35,7 +35,11 @@ object FileParseRecognition
     fun parseFromRepository(url: String): CompletableFuture<ParsedProject?>
     {
         val config = EnvTableRepositoryConfig
-        val directory = File(config.getDirectory(), "/git/${url.replace(":", "")}")
+
+        val directory = File(
+            config.getDirectory(),
+            "/cache/${url.replace(":", "")}"
+        )
 
         return CompletableFuture.supplyAsync {
             try
@@ -45,11 +49,15 @@ object FileParseRecognition
                     .setDirectory(directory)
                     .call()
 
-                parseUnrecognizedDirectory(directory).join().apply {
-                    directory.delete()
-                }
+                parseUnrecognizedDirectory(directory)
+                    .join().apply {
+                        directory.delete()
+                    }
             } catch (exception: Exception)
             {
+                if (directory.exists())
+                    directory.delete()
+
                 exception.printStackTrace()
                 throw exception
             }
