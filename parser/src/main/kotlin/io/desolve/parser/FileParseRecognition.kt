@@ -23,8 +23,11 @@ object FileParseRecognition
     fun parseUnrecognizedDirectory(directory: File): CompletableFuture<ParsedProject?>
     {
         return CompletableFuture.supplyAsync {
-            val type = ProjectType.recognize(directory) ?: return@supplyAsync null
-            val parser = parsers[type] ?: return@supplyAsync null
+            val type = ProjectType.recognize(directory)
+                ?: return@supplyAsync null
+
+            val parser = parsers[type]
+                ?: return@supplyAsync null
 
             return@supplyAsync parser
                 .parse(directory)

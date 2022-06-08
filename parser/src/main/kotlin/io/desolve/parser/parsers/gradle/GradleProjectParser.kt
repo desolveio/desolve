@@ -118,7 +118,6 @@ abstract class GradleProjectParser: ProjectParser
                 )
             }
 
-
             val project = ParsedProject(
                 groupId!!, artifactId!!, version!!,
                 buildResult.file, EnvTableRepositoryConfig.getDirectory(), buildResult, parent

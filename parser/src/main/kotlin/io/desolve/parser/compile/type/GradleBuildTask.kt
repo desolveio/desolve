@@ -25,7 +25,8 @@ enum class GradlewArguments(val argument: String)
 }
 
 class GradleBuildTask(
-    private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build)
+    private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build),
+    override val buildLog: MutableList<String> = mutableListOf()
 ) : BuildTask
 {
     override var status = BuildStatus.Starting
@@ -81,6 +82,7 @@ class GradleBuildTask(
                     if (line != null)
                     {
                         println(line)
+                        this.buildLog += line
                     }
                 }
             }
@@ -93,6 +95,7 @@ class GradleBuildTask(
                     if (line != null)
                     {
                         println(line)
+                        this.buildLog += line
                     }
                 }
             }
@@ -107,12 +110,14 @@ class GradleBuildTask(
             val file = scanForJar(buildDirectory)
                 ?: return@supplyAsync BuildResult(
                     BuildResultType.Failed,
-                    null
+                    null, listOf(
+                        "No archive found!"
+                    )
                 )
 
             return@supplyAsync BuildResult(
                 BuildResultType.Success,
-                file
+                file, this.buildLog
             ).apply {
                 status = BuildStatus.Finished
             }
