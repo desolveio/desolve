@@ -92,7 +92,6 @@ class GradleBuildTask(
 
                     if (line != null)
                     {
-                        println(line)
                         this.buildLog += line
                     }
                 }
@@ -105,7 +104,6 @@ class GradleBuildTask(
 
                     if (line != null)
                     {
-                        println(line)
                         this.buildLog += line
                     }
                 }
