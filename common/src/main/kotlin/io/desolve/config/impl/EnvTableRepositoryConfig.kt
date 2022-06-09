@@ -2,6 +2,7 @@ package io.desolve.config.impl
 
 import io.desolve.config.RepositoryConfig
 import io.desolve.util.OSType
+import org.apache.commons.io.FileUtils
 import java.io.File
 
 /**
@@ -12,18 +13,13 @@ object EnvTableRepositoryConfig : RepositoryConfig
 {
     override fun getDirectory(): File
     {
-        val file = File("${System.getenv(
-            when (OSType.resolveOsType())
-            {
-                OSType.Unix -> "HOME"
-                OSType.Windows -> "USERPROFILE"
-            }
-        )}${File.separator}.desolve")
+        val file = File(
+            FileUtils.getUserDirectory(),
+            ".desolve"
+        )
 
         if (!file.exists())
-        {
             file.mkdirs()
-        }
 
         return file
     }

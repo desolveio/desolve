@@ -6,6 +6,7 @@ import io.desolve.parser.compile.BuildStatus
 import io.desolve.parser.compile.BuildTask
 import io.desolve.parser.container.ContainerProvider
 import io.desolve.util.OSType
+import org.apache.commons.io.FilenameUtils
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -54,10 +55,20 @@ class GradleBuildTask(
                 OSType.Unix -> "gradlew"
             }
 
+            val path = FilenameUtils
+                .separatorsToSystem(
+                    File(projectDirectory, executableFile).absolutePath
+                )
+
+            Runtime.getRuntime()
+                .exec(
+                    "chmod -R 777 $path"
+                )
+                .waitFor()
+
             val process =
                 container.executeCommand(
-                    "${projectDirectory.path}/${executableFile}",
-                    *arguments.map { it.argument }.toTypedArray()
+                    path, *arguments.map { it.argument }.toTypedArray()
                 )
 
             val info = BufferedReader(

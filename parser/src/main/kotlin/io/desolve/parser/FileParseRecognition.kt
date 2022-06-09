@@ -50,6 +50,8 @@ object FileParseRecognition
                 Git.cloneRepository()
                     .setURI(url)
                     .setDirectory(directory)
+                    // TODO: 6/8/2022 allow user to specify branch maybe
+                    //  .setBranch("main")
                     .call()
 
                 parseUnrecognizedDirectory(directory)
@@ -58,10 +60,11 @@ object FileParseRecognition
                     }
             } catch (exception: Exception)
             {
+                exception.printStackTrace()
+
                 if (directory.exists())
                     directory.delete()
 
-                exception.printStackTrace()
                 throw exception
             }
         }
