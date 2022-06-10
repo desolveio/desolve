@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group = "io.desolve.repository"
-    version = "1.0.0.5"
+    version = "1.0.0.6"
 
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")

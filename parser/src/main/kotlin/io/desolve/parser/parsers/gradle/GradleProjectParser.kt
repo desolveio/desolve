@@ -120,7 +120,9 @@ abstract class GradleProjectParser: ProjectParser
 
             val project = ParsedProject(
                 groupId!!, artifactId!!, version!!,
-                buildResult.file, EnvTableRepositoryConfig.getDirectory(), buildResult, parent
+                buildResult.file,
+                File(EnvTableRepositoryConfig.getDirectory(), "cache"),
+                buildResult, parent
             )
 
             val subprojects = traverseFiles(directory) {
