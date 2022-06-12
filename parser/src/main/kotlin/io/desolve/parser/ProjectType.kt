@@ -6,15 +6,19 @@ import java.io.File
  * @author Patrick Zondervan
  * @since 5/23/2022
  */
-enum class ProjectType(val fileRegex: Regex, val ensured: String)
+enum class ProjectType(
+    val fileRegex: Regex? = null,
+    val fileNames: Array<String>? = null,
+    val ensured: String
+)
 {
     // TODO: 24/05/2022 fix thoses regexes, currently:
     // - GradleKotlin | does not work
     // - Gradle       | seems to work
     // - Maven        | untested
-    Maven("pom.xml\$".toRegex(), "pom.xml"),
-    Gradle("\\.gradle\$".toRegex(), "build.gradle"),
-    GradleKotlin("\\.gradle.kts\$".toRegex(), "build.gradle.kts");
+    Maven("pom.xml\$".toRegex(), ensured = "pom.xml"),
+    Gradle(fileNames = arrayOf("build.gradle", "settings.gradle"), ensured = "build.gradle"),
+    GradleKotlin(fileNames = arrayOf("build.gradle.kts", "settings.gradle.kts"), ensured = "build.gradle.kts");
 
     fun matchesType(directory: File): Boolean
     {
@@ -27,9 +31,8 @@ enum class ProjectType(val fileRegex: Regex, val ensured: String)
 
         for (listFile in files)
         {
-            if (
-                !listFile.name.matches(fileRegex) ||
-                listFile.name.lowercase() == ensured
+            if (!((fileRegex != null && listFile.name.matches(fileRegex))
+                        || (fileNames != null && fileNames.contains(listFile.name)))
             )
             {
                 continue
