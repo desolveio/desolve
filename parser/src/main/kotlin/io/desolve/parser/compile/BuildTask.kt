@@ -25,6 +25,9 @@ interface BuildTask
         active: AtomicBoolean
     )
     {
+        val printLogs = System
+            .getenv("DESOLVE_PRINT_LOGS") != null
+
         thread {
             while (active.get())
             {
@@ -32,6 +35,9 @@ interface BuildTask
 
                 if (line != null)
                 {
+                    if (printLogs)
+                        println(line)
+
                     this.buildLog += line
                 }
             }
@@ -44,6 +50,9 @@ interface BuildTask
 
                 if (line != null)
                 {
+                    if (printLogs)
+                        println(line)
+
                     this.buildLog += line
                 }
             }
