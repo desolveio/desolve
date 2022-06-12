@@ -19,7 +19,24 @@ object EnvTableRepositoryConfig : RepositoryConfig
         )
 
         if (!file.exists())
+        {
             file.mkdirs()
+        }
+
+        return file
+    }
+
+    override fun getBuildDirectory(): File
+    {
+        val file = File(
+            FileUtils.getUserDirectory(),
+            ".desolve/cache"
+        )
+
+        if (!file.exists())
+        {
+            file.mkdirs()
+        }
 
         return file
     }

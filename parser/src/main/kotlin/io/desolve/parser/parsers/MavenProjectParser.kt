@@ -1,10 +1,9 @@
 package io.desolve.parser.parsers
 
-import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
-import io.desolve.parser.compile.BuildResult
-import io.desolve.parser.compile.BuildResultType
+import io.desolve.parser.ProjectType
+import io.desolve.parser.compile.type.MavenBuildTask
 import java.io.File
 import java.io.FileReader
 import java.util.concurrent.CompletableFuture
@@ -15,7 +14,14 @@ import java.util.concurrent.CompletableFuture
  */
 object MavenProjectParser : ProjectParser
 {
+    override val projectType = ProjectType.Maven
+
     override fun parse(directory: File): CompletableFuture<ParsedProject?>
+    {
+        return parse(directory, null);
+    }
+
+    override fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
     {
         return CompletableFuture.supplyAsync {
             val fileReader = FileReader(File(directory, "pom.xml"))
@@ -54,13 +60,29 @@ object MavenProjectParser : ProjectParser
                 }
             }
 
-            if (groupId == null || artifactId == null || version == null)
+            if (artifactId == null || version == null || groupId == null)
             {
-                return@supplyAsync null
+                if (parent == null)
+                {
+                    return@supplyAsync null
+                }
+
+                artifactId = artifactId ?: directory.name
+                version = version ?: parent.version
+                groupId = groupId ?: parent.groupId
             }
 
-            // TODO: 5/22/2022 maven build task
-            return@supplyAsync ParsedProject(groupId!!, artifactId!!, version!!, File(""), EnvTableRepositoryConfig.getDirectory(), BuildResult(BuildResultType.Success, null))
+            val buildResult = buildProject(MavenBuildTask(), parent, directory) { it.build(directory) }
+                .join() ?: return@supplyAsync null
+
+            return@supplyAsync parseFromResult(
+                groupId!!,
+                artifactId!!,
+                version!!,
+                buildResult,
+                directory,
+                parent
+            ).join()
         }
     }
 

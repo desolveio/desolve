@@ -1,17 +1,13 @@
 package io.desolve.parser.parsers.gradle
 
-import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
-import io.desolve.parser.ProjectType
-import io.desolve.parser.compile.BuildResult
-import io.desolve.parser.compile.BuildResultType
 import io.desolve.parser.compile.type.GradleBuildTask
 import java.io.File
 import java.io.FileReader
 import java.util.concurrent.CompletableFuture
 
-abstract class GradleProjectParser: ProjectParser
+abstract class GradleProjectParser : ProjectParser
 {
     abstract val buildFileName: String
     abstract val settingsFileName: String
@@ -21,7 +17,7 @@ abstract class GradleProjectParser: ProjectParser
         return parse(directory, null)
     }
 
-    private fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
+    override fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
     {
         return CompletableFuture.supplyAsync {
             val gradleBuild = FileReader(File(directory, buildFileName))
@@ -87,71 +83,18 @@ abstract class GradleProjectParser: ProjectParser
                 groupId = groupId ?: parent.groupId
             }
 
-            val buildResult: BuildResult
+            val buildResult = buildProject(GradleBuildTask(), parent, directory) { it.build(directory) }
+                .join() ?: return@supplyAsync null
 
-            if (parent == null)
-            {
-                buildResult = GradleBuildTask()
-                    .build(directory)
-                    .join()
-
-                if (buildResult.file == null || buildResult.result == BuildResultType.Failed)
-                {
-                    return@supplyAsync null
-                }
-            } else
-            {
-                val file = GradleBuildTask.scanForJar(
-                    File(
-                        directory,
-                        "/build/libs/"
-                    )
-                )
-
-                buildResult = BuildResult(
-                    when (file)
-                    {
-                        null -> BuildResultType.Failed
-                        else -> BuildResultType.Success
-                    },
-                    file
-                )
-            }
-
-            val project = ParsedProject(
-                groupId!!, artifactId!!, version!!,
-                buildResult.file,
-                File(EnvTableRepositoryConfig.getDirectory(), "cache"),
-                buildResult, parent
-            )
-
-            val subprojects = traverseFiles(directory) {
-                ProjectType.Gradle.matchesType(it)
-            }.mapNotNull {
-                parse(it, project).join()
-            }
-
-            return@supplyAsync project.apply {
-                this.children = mutableListOf(*subprojects.toTypedArray())
-            }
+            return@supplyAsync parseFromResult(
+                groupId!!,
+                artifactId!!,
+                version!!,
+                buildResult,
+                directory,
+                parent
+            ).join()
         }
-    }
-
-    private fun traverseFiles(
-        directory: File,
-        filter: (File) -> Boolean
-    ): List<File>
-    {
-        val files = directory.listFiles()
-
-        if (!directory.isDirectory || files == null)
-        {
-            return emptyList()
-        }
-
-        return files
-            .filter(filter)
-            .toList()
     }
 
     open fun scanForProperty(line: String, id: String, action: (String) -> Unit)

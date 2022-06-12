@@ -5,8 +5,6 @@ import io.desolve.parser.compile.BuildResultType
 import io.desolve.parser.compile.BuildStatus
 import io.desolve.parser.compile.BuildTask
 import io.desolve.parser.container.ContainerProvider
-import io.desolve.util.OSType
-import org.apache.commons.io.FilenameUtils
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -17,14 +15,14 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @author Patrick Zondervan
  * @since 5/23/2022
  */
-enum class GradlewArguments(val argument: String)
+enum class MavenArguments(val argument: String)
 {
-    Build("build"),
+    Install("install"),
     Clean("clean"),
 }
 
-class GradleBuildTask(
-    private vararg val arguments: GradlewArguments = arrayOf(GradlewArguments.Build),
+class MavenBuildTask(
+    private vararg val arguments: MavenArguments = arrayOf(MavenArguments.Install),
     override val buildLog: MutableList<String> = mutableListOf()
 ) : BuildTask
 {
@@ -47,31 +45,9 @@ class GradleBuildTask(
 
             container.moveFolderToContainer(projectDirectory)
 
-            val executableFile = when (OSType.resolveOsType())
-            {
-                OSType.Windows -> "gradlew.bat"
-                OSType.Unix -> "gradlew"
-            }
-
-            // no idea why growly is doing this, file.absolutePath already translates it to the proper seperators depending
-            // on what operating system you're on.
-            val path = FilenameUtils
-                .separatorsToSystem(
-                    File(projectDirectory, executableFile).absolutePath
-                )
-
-            // no idea what growly is trying to do here, but suspecting he's trying to make the gradlew executable (?) (which it already should be)
-            // ^ just purely assuming this since there should be no reason to set the permission of the directory.
-            // explanation for both this and the question above would be nice.
-            Runtime.getRuntime()
-                .exec(
-                    "chmod -R 777 $path"
-                )
-                .waitFor()
-
             val process =
                 container.executeCommand(
-                    path, *arguments.map { it.argument }.toTypedArray()
+                    "mvn", *arguments.map { it.argument }.toTypedArray()
                 )
 
             val info = BufferedReader(
