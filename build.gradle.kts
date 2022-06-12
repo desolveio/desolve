@@ -32,17 +32,17 @@ allprojects {
     }
 
     publishing {
-//        repositories {
-//            maven {
-//                name = "desolve"
-//                url = uri("${property("desolve_artifactory_contextUrl")}/gradle-release")
-//
-//                credentials {
-//                    username = property("desolve_artifactory_user") as String
-//                    password = property("desolve_artifactory_password") as String
-//                }
-//            }
-//        }
+        repositories {
+            maven {
+                name = "desolve"
+                url = uri("${property("desolve_artifactory_contextUrl")}/gradle-release")
+
+                credentials {
+                    username = property("desolve_artifactory_user") as String
+                    password = property("desolve_artifactory_password") as String
+                }
+            }
+        }
 
         publications {
             register("mavenJava", MavenPublication::class) {
