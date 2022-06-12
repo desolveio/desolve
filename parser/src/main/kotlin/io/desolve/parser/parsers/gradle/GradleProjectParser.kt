@@ -75,7 +75,7 @@ abstract class GradleProjectParser : ProjectParser
             {
                 if (parent == null)
                 {
-                    return@supplyAsync null
+                    throw IllegalStateException("parent is null, but artifactId, version, or groupId are also null.")
                 }
 
                 artifactId = artifactId ?: directory.name
@@ -84,7 +84,7 @@ abstract class GradleProjectParser : ProjectParser
             }
 
             val buildResult = buildProject(GradleBuildTask(), parent, directory) { it.build(directory) }
-                .join() ?: return@supplyAsync null
+                .join() ?: throw IllegalStateException("Unable to build project")
 
             return@supplyAsync parseFromResult(
                 groupId!!,

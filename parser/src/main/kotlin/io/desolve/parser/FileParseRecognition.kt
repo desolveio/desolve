@@ -24,10 +24,10 @@ object FileParseRecognition
     {
         return CompletableFuture.supplyAsync {
             val type = ProjectType.recognize(directory)
-                ?: return@supplyAsync null
+                ?: throw IllegalArgumentException("Unable to find project type for provided directory")
 
             val parser = parsers[type]
-                ?: return@supplyAsync null
+                ?: throw IllegalArgumentException("Unable to find parser for provided project type")
 
             return@supplyAsync parser
                 .parse(directory)
@@ -55,7 +55,8 @@ object FileParseRecognition
                     .call()
 
                 parseUnrecognizedDirectory(directory)
-                    .join().apply {
+                    .join()
+                    .apply {
                         directory.delete()
                     }
             } catch (exception: Exception)
@@ -63,7 +64,9 @@ object FileParseRecognition
                 exception.printStackTrace()
 
                 if (directory.exists())
+                {
                     directory.delete()
+                }
 
                 throw exception
             }

@@ -99,9 +99,9 @@ class GradleBuildTask(
             val file = scanForJar(buildDirectory)
                 ?: return@supplyAsync BuildResult(
                     BuildResultType.Failed,
-                    null, listOf(
-                        "No archive found!"
-                    )
+                    null, buildLog.apply {
+                        this.add("No archive found!")
+                    }
                 )
 
             return@supplyAsync BuildResult(

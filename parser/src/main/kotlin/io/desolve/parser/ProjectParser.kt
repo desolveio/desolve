@@ -33,7 +33,7 @@ interface ProjectParser
             initialize(task).thenApply {
                 if (it.file == null || it.result == BuildResultType.Failed)
                 {
-                    return@thenApply null
+                    throw IllegalArgumentException("file is null or build failed, ${it.logs}")
                 }
 
                 return@thenApply it
