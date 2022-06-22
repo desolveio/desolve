@@ -44,6 +44,9 @@ object FileParseRecognition
             "/cache/${url.replace(":", "")}"
         )
 
+        if (directory.exists())
+            directory.deleteRecursively()
+
         return CompletableFuture.supplyAsync {
             try
             {
@@ -57,7 +60,7 @@ object FileParseRecognition
                 parseUnrecognizedDirectory(directory)
                     .join()
                     .apply {
-                        directory.delete()
+                        directory.deleteRecursively()
                     }
             } catch (exception: Exception)
             {
@@ -65,7 +68,7 @@ object FileParseRecognition
 
                 if (directory.exists())
                 {
-                    directory.delete()
+                    directory.deleteRecursively()
                 }
 
                 throw exception

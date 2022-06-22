@@ -53,16 +53,11 @@ class GradleBuildTask(
                 OSType.Unix -> "gradlew"
             }
 
-            // no idea why growly is doing this, file.absolutePath already translates it to the proper seperators depending
-            // on what operating system you're on.
             val path = FilenameUtils
                 .separatorsToSystem(
                     File(projectDirectory, executableFile).absolutePath
                 )
 
-            // no idea what growly is trying to do here, but suspecting he's trying to make the gradlew executable (?) (which it already should be)
-            // ^ just purely assuming this since there should be no reason to set the permission of the directory.
-            // explanation for both this and the question above would be nice.
             Runtime.getRuntime()
                 .exec(
                     "chmod -R 777 $path"
