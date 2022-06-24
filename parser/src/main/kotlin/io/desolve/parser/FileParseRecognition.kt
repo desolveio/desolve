@@ -5,6 +5,11 @@ import io.desolve.parser.parsers.gradle.GroovyGradleProjectParser
 import io.desolve.parser.parsers.MavenProjectParser
 import io.desolve.parser.parsers.gradle.KotlinGradleProjectParser
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.ObjectId
+import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.revwalk.RevWalk
+import org.eclipse.jgit.transport.CredentialsProvider
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
@@ -35,7 +40,31 @@ object FileParseRecognition
         }
     }
 
-    fun parseFromRepository(url: String): CompletableFuture<ParsedProject?>
+    data class RepositoryCloneSpec(
+        val branch: String,
+        val commit: String? = null,
+        val credentials: Boolean = false,
+        val credentialsProvider: Pair<String, String> = "" to "",
+        val credentialsProviderType: RepositoryCloneCredentialProviders =
+            RepositoryCloneCredentialProviders.None
+    )
+
+    enum class RepositoryCloneCredentialProviders(
+        val overridingUsername: String? = null
+    )
+    {
+        TokenGitHub("token"),
+        TokenGitLab,
+        Basic,
+        None
+    }
+
+    fun parseFromRepository(
+        url: String, spec: RepositoryCloneSpec =
+            RepositoryCloneSpec(
+                branch = "main"
+            )
+    ): CompletableFuture<ParsedProject?>
     {
         val config = EnvTableRepositoryConfig
 
@@ -50,11 +79,22 @@ object FileParseRecognition
         return CompletableFuture.supplyAsync {
             try
             {
-                Git.cloneRepository()
+                val git = Git.cloneRepository()
                     .setURI(url)
                     .setDirectory(directory)
-                    // TODO: 6/8/2022 allow user to specify branch maybe
-                    //  .setBranch("main")
+                    .setBranch(spec.branch)
+                    .apply {
+                        if (spec.credentials)
+                        {
+                            this.setCredentialsProvider(
+                                UsernamePasswordCredentialsProvider(
+                                    spec.credentialsProviderType.overridingUsername
+                                        ?: spec.credentialsProvider.first,
+                                    spec.credentialsProvider.second
+                                )
+                            )
+                        }
+                    }
                     .call()
 
                 parseUnrecognizedDirectory(directory)
