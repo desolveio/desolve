@@ -62,7 +62,7 @@ object FileParseRecognition
     fun parseFromRepository(
         url: String, spec: RepositoryCloneSpec =
             RepositoryCloneSpec(
-                branch = "main"
+                branch = "master"
             )
     ): CompletableFuture<ParsedProject?>
     {
@@ -79,7 +79,7 @@ object FileParseRecognition
         return CompletableFuture.supplyAsync {
             try
             {
-                val git = Git.cloneRepository()
+                Git.cloneRepository()
                     .setURI(url)
                     .setDirectory(directory)
                     .setBranch(spec.branch)
