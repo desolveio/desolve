@@ -1,16 +1,14 @@
 package io.desolve.parser
 
 import io.desolve.config.impl.EnvTableRepositoryConfig
-import io.desolve.parser.parsers.gradle.GroovyGradleProjectParser
 import io.desolve.parser.parsers.MavenProjectParser
+import io.desolve.parser.parsers.gradle.GroovyGradleProjectParser
 import io.desolve.parser.parsers.gradle.KotlinGradleProjectParser
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.ObjectId
-import org.eclipse.jgit.revwalk.RevCommit
-import org.eclipse.jgit.revwalk.RevWalk
-import org.eclipse.jgit.transport.CredentialsProvider
+import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -41,7 +39,7 @@ object FileParseRecognition
     }
 
     data class RepositoryCloneSpec(
-        val branch: String,
+        val branch: String? = null,
         val commit: String? = null,
         val credentials: Boolean = false,
         val credentialsProvider: Pair<String, String> = "" to "",
@@ -59,11 +57,40 @@ object FileParseRecognition
         None
     }
 
+    fun fetchGitBranches(gitUrl: String): List<String>
+    {
+        val refs: Collection<Ref>
+        val branches = mutableListOf<String>()
+
+        try
+        {
+            refs = Git.lsRemoteRepository()
+                .setHeads(true)
+                .setRemote(gitUrl)
+                .call()
+
+            for (ref in refs)
+            {
+                branches.add(
+                    ref.name.substring(
+                        ref.name.lastIndexOf("/") + 1,
+                        ref.name.length
+                    )
+                )
+            }
+
+            branches.sort()
+        } catch (exception: Exception)
+        {
+            exception.printStackTrace()
+        }
+
+        return branches
+    }
+
     fun parseFromRepository(
         url: String, spec: RepositoryCloneSpec =
-            RepositoryCloneSpec(
-                branch = "master"
-            )
+            RepositoryCloneSpec()
     ): CompletableFuture<Pair<ParsedProject?, File>>
     {
         val config = EnvTableRepositoryConfig
@@ -79,10 +106,14 @@ object FileParseRecognition
         return CompletableFuture.supplyAsync {
             try
             {
+                // make use of this better
+                val branch = this.fetchGitBranches(url)
+                    .firstOrNull() ?: spec.branch
+
                 Git.cloneRepository()
                     .setURI(url)
                     .setDirectory(directory)
-                    .setBranch(spec.branch)
+                    .setBranch(branch)
                     .apply {
                         if (spec.credentials)
                         {
