@@ -41,11 +41,20 @@ interface ProjectParser
         } else
         {
             CompletableFuture.supplyAsync {
+                var child = "/build/libs/"
+
+                if (!File(directory, child).exists())
+                {
+                    // maven, TODO: move to build tool meta
+                    child = "/target/"
+                }
+
+                directory.walkTopDown().forEach {
+                    println(it.name)
+                }
+
                 val file = task.scanForJar(
-                    File(
-                        directory,
-                        "/build/libs/"
-                    )
+                    File(directory, child)
                 )
 
                 return@supplyAsync BuildResult(
@@ -56,6 +65,9 @@ interface ProjectParser
                     },
                     file
                 )
+            }.exceptionally {
+                it.printStackTrace()
+                return@exceptionally null
             }
         }
     }

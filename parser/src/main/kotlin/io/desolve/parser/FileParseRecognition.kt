@@ -70,7 +70,7 @@ object FileParseRecognition
 
         val directory = File(
             config.getDirectory(),
-            "/cache/${url.replace(":", "")}"
+            url.replace(":", "")
         )
 
         if (directory.exists())

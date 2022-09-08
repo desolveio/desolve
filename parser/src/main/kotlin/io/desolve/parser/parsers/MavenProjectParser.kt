@@ -72,8 +72,11 @@ object MavenProjectParser : ProjectParser
                 groupId = groupId ?: parent.groupId
             }
 
-            val buildResult = buildProject(MavenBuildTask(), parent, directory) { it.build(directory) }
-                .join() ?: return@supplyAsync null
+            val buildResult = buildProject(
+                MavenBuildTask(), parent, directory
+            ) {
+                it.build(directory)
+            }.join() ?: return@supplyAsync null
 
             return@supplyAsync parseFromResult(
                 groupId!!,
