@@ -18,7 +18,7 @@ class ProjectGenerationTest
             File("${home}/projects/data-store-kt/build/libs/data-store-kt-1.0-SNAPSHOT.jar")
 
         ParsedProject(
-            "io.github.yourmom", "data-stuff", "3.0", jarFile, config.getDirectory(), BuildResult(BuildResultType.Failed, null)
+            "io.github.yourmom", "data-stuff", "3.0", jarFile, config.getBuildDirectory(), BuildResult(BuildResultType.Failed, null)
         ).generateDirectory()
     }
 }

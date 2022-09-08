@@ -15,7 +15,7 @@ object EnvTableRepositoryConfig : RepositoryConfig
     {
         val file = File(
             FileUtils.getUserDirectory(),
-            ".desolve"
+            "desolve"
         )
 
         if (!file.exists())
@@ -30,7 +30,7 @@ object EnvTableRepositoryConfig : RepositoryConfig
     {
         val file = File(
             FileUtils.getUserDirectory(),
-            ".desolve/cache"
+            "desolve-cache"
         )
 
         if (!file.exists())

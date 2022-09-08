@@ -58,12 +58,12 @@ suspend fun main()
 
                 runBlocking {
                     message.reply {
-                        this.content = if (it == null)
+                        this.content = if (it.first == null)
                         {
                             "Was unable to build project from $url"
                         } else
                         {
-                            it.generateDirectory()
+                            it.first!!.generateDirectory()
                             "Succesfully built, added to repository."
                         }
                     }
@@ -76,7 +76,7 @@ suspend fun main()
     }
 
     thread {
-        Watcher.watchDirectory(EnvTableRepositoryConfig.getDirectory()) {
+        Watcher.watchDirectory(EnvTableRepositoryConfig.getBuildDirectory()) {
             if (it.name.startsWith("git"))
             {
                 return@watchDirectory

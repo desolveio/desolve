@@ -91,6 +91,13 @@ class GradleBuildTask(
             container.moveFolderFromContainer(projectDirectory)
 
             val buildDirectory = File(projectDirectory, "/build/libs/")
+            println(buildDirectory.path)
+            println(buildDirectory.listFiles())
+
+            buildDirectory.walkTopDown().forEach {
+                println(it.name)
+            }
+
             val file = scanForJar(buildDirectory)
                 ?: return@supplyAsync BuildResult(
                     BuildResultType.Failed,

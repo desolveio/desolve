@@ -64,7 +64,7 @@ object FileParseRecognition
             RepositoryCloneSpec(
                 branch = "master"
             )
-    ): CompletableFuture<ParsedProject?>
+    ): CompletableFuture<Pair<ParsedProject?, File>>
     {
         val config = EnvTableRepositoryConfig
 
@@ -97,11 +97,7 @@ object FileParseRecognition
                     }
                     .call()
 
-                parseUnrecognizedDirectory(directory)
-                    .join()
-                    .apply {
-                        directory.deleteRecursively()
-                    }
+                parseUnrecognizedDirectory(directory).join()
             } catch (exception: Exception)
             {
                 exception.printStackTrace()
@@ -112,7 +108,7 @@ object FileParseRecognition
                 }
 
                 throw exception
-            }
+            } to directory
         }
     }
 }

@@ -63,7 +63,7 @@ class ParsedProject(
      */
     fun generateDirectory(targetDirectory: File? = parentDirectory): File
     {
-        if (targetDirectory == null || builtFile == null)
+        if (targetDirectory == null || builtFile == null || !targetDirectory.exists() || !builtFile.exists())
         {
             throw IllegalStateException("Unable to call #generateDirectory() from ParsedObject without builtFile/parentDirectory fields.")
         }

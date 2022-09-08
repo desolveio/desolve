@@ -108,7 +108,7 @@ class FileParser : KoinComponent
 
         val config by inject<RepositoryConfig>()
         val data =
-            DependencyData(groupId, artifactId as String, version as String, fileName as String, config.getDirectory())
+            DependencyData(groupId, artifactId as String, version as String, fileName as String, config.getBuildDirectory())
 
         if (!data.isFile())
         {
