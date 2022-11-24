@@ -8,17 +8,24 @@ import java.io.File
  */
 enum class ProjectType(
     val fileRegex: Regex? = null,
-    val fileNames: Array<String>? = null,
-    val ensured: String
+    val fileNames: Array<String>? = null
 )
 {
     // TODO: 24/05/2022 fix thoses regexes, currently:
     // - GradleKotlin | does not work
     // - Gradle       | seems to work
     // - Maven        | untested
-    Maven("pom.xml\$".toRegex(), ensured = "pom.xml"),
-    Gradle(fileNames = arrayOf("build.gradle", "settings.gradle"), ensured = "build.gradle"),
-    GradleKotlin(fileNames = arrayOf("build.gradle.kts", "settings.gradle.kts"), ensured = "build.gradle.kts");
+    Maven(
+        fileNames = arrayOf("pom.xml")
+    ),
+    Gradle(
+        fileNames = arrayOf(
+            "build.gradle",
+            "settings.gradle",
+            "build.gradle.kts",
+            "settings.gradle.kts"
+        )
+    );
 
     fun matchesType(directory: File): Boolean
     {

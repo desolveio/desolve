@@ -4,6 +4,7 @@ import io.desolve.parser.ParsedProject
 import io.desolve.parser.ProjectParser
 import io.desolve.parser.ProjectType
 import io.desolve.parser.compile.type.MavenBuildTask
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader
 import java.io.File
 import java.io.FileReader
 import java.util.concurrent.CompletableFuture
@@ -24,40 +25,20 @@ object MavenProjectParser : ProjectParser
     override fun parse(directory: File, parent: ParsedProject?): CompletableFuture<ParsedProject?>
     {
         return CompletableFuture.supplyAsync {
-            val fileReader = FileReader(File(directory, "pom.xml"))
             var groupId: String? = null
             var artifactId: String? = null
             var version: String? = null
 
-            for (current in fileReader.readLines())
-            {
-                val line = current.replace(" ", "")
+            kotlin.runCatching {
+                val reader = MavenXpp3Reader()
 
-                if (groupId != null && artifactId != null && version != null)
-                {
-                    break
-                }
+                val model = reader.read(
+                    FileReader(File(directory, "pom.xml"))
+                )
 
-                scanForTag(
-                    line = line,
-                    tag = "groupId"
-                ) {
-                    groupId = it
-                }
-
-                scanForTag(
-                    line = line,
-                    tag = "artifactId"
-                ) {
-                    artifactId = it
-                }
-
-                scanForTag(
-                    line = line,
-                    tag = "version"
-                ) {
-                    version = it
-                }
+                groupId = model.groupId
+                artifactId = model.artifactId
+                version = model.version
             }
 
             if (artifactId == null || version == null || groupId == null)

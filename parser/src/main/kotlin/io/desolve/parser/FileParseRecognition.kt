@@ -2,13 +2,11 @@ package io.desolve.parser
 
 import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.parser.parsers.MavenProjectParser
-import io.desolve.parser.parsers.gradle.GroovyGradleProjectParser
-import io.desolve.parser.parsers.gradle.KotlinGradleProjectParser
+import io.desolve.parser.parsers.GradleProjectParser
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -19,8 +17,7 @@ object FileParseRecognition
 {
     private val parsers = hashMapOf(
         ProjectType.Maven to MavenProjectParser,
-        ProjectType.Gradle to GroovyGradleProjectParser,
-        ProjectType.GradleKotlin to KotlinGradleProjectParser
+        ProjectType.Gradle to GradleProjectParser,
     )
 
     fun parseUnrecognizedDirectory(directory: File): CompletableFuture<ParsedProject?>
