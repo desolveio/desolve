@@ -1,20 +1,19 @@
 package io.desolve.repository
 
-import io.desolve.config.RepositoryConfig
 import io.desolve.config.impl.EnvTableRepositoryConfig
 import io.desolve.data.DependencyData
-
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.context.startKoin
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondFile
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.head
+import io.ktor.server.routing.routing
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -24,26 +23,7 @@ import java.nio.file.Paths
  */
 fun main()
 {
-    startKoin {
-        printLogger()
-
-        val module = module {
-            single { EnvTableRepositoryConfig }
-                .apply {
-                    bind<RepositoryConfig>() to this
-                }
-        }
-
-        this.modules(
-            module
-        )
-    }
-
-    embeddedServer(Netty, port = 3717) {
-        routing {
-            depend()
-        }
-    }.start(wait = true)
+    embeddedServer(Netty, port = 3717, module = Application::myApplicationModule).start(wait = true)
 }
 
 fun Route.depend()
@@ -66,7 +46,7 @@ fun Route.depend()
     }
 }
 
-class FileParser : KoinComponent
+class FileParser
 {
     suspend fun parseFile(call: ApplicationCall): DependencyData?
     {
@@ -106,7 +86,7 @@ class FileParser : KoinComponent
             return null
         }
 
-        val config by inject<RepositoryConfig>()
+        val config = EnvTableRepositoryConfig
         val data =
             DependencyData(groupId, artifactId as String, version as String, fileName as String, config.getBuildDirectory())
 
@@ -122,4 +102,11 @@ class FileParser : KoinComponent
         return data
     }
 
+}
+
+fun Application.myApplicationModule()
+{
+    routing {
+        depend()
+    }
 }

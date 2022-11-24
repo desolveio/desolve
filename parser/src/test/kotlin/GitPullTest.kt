@@ -11,6 +11,6 @@ class GitPullTest
             .parseFromRepository(repo)
             .join()
 
-        project!!.generateDirectory()
+//        project!!.generateDirectory()
     }
 }

@@ -1,0 +1,67 @@
+openapi: "3.0.3"
+info:
+  title: "desolve_repository API"
+  description: "desolve_repository API"
+  version: "1.0.0"
+servers:
+- url: "https://desolve_repository"
+paths:
+  /repo/{repository}:
+    get:
+      description: ""
+      parameters:
+      - name: "repository"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "aaa"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+    head:
+      description: ""
+      parameters:
+      - name: "repository"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "aaa"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
